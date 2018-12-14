@@ -10,16 +10,21 @@ import XCTest
 @testable import image_upload_example
 
 class image_upload_exampleTests: XCTestCase {
+    
+    var locImage: LocImage!
 
     override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        super.setUp()
+        locImage = LocImage(imageDict: ["created": "2018-12-10 10:05:01" as AnyObject])
     }
 
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        super.tearDown()
+        locImage = nil
     }
 
     func testExample() {
+        XCTAssert(locImage.created_at > 86400)
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }

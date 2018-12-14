@@ -17,6 +17,7 @@ import CoreLocation
 import Alamofire
 import Toast_Swift
 import IJProgressView
+import Photos
 
 class ViewController: UIViewController, LightboxControllerDismissalDelegate, GalleryControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
@@ -37,7 +38,9 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         prepareFABButton()
         
         Gallery.Config.tabsToShow = [.imageTab, .cameraTab]
+//        Gallery.Config.blacklistedAssetMediaSubtypes = [.photoLive]
 //        Gallery.Config.VideoEditor.savesEditedVideoToLibrary = true
+        
         fabButton.addTarget(self, action: #selector(buttonTouched(_:)), for: .touchUpInside)
         
         locationManager.delegate = self
@@ -47,24 +50,36 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         
         tableView.delegate = self
         tableView.dataSource = self
+//        tableView.separatorInset = .zero
+//        tableView.contentInset = UIEdgeInsets(top: 0, left: -15, bottom: 0, right: 0)
 
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        locationAuthStatus()
+        if locationAuthStatus() {
+//            print("Location auth on load")
+        }
     }
     
-    func locationAuthStatus() -> Bool {
-        let status = CLLocationManager.authorizationStatus()
-        if status == .authorizedWhenInUse {
-            
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if (status == CLAuthorizationStatus.authorizedWhenInUse) {
             IJProgressView.shared.showProgressView()
-
-            currentLocation = locationManager.location
-            Location.sharedInstance.latitude = currentLocation.coordinate.latitude
-            Location.sharedInstance.longitude = currentLocation.coordinate.longitude
-            
+            setLocation()
+            self.downloadImageData {
+                
+            }
+        }
+    }
+    
+    func setLocation() {
+        currentLocation = locationManager.location
+        Location.sharedInstance.latitude = currentLocation.coordinate.latitude
+        Location.sharedInstance.longitude = currentLocation.coordinate.longitude
+        
+        if !Constants.useAddress {
+            Location.sharedInstance.address = String(Location.sharedInstance.latitude) + ", " + String(Location.sharedInstance.longitude)
+        } else {
             // this takes a while
             CLGeocoder().reverseGeocodeLocation(currentLocation, completionHandler: {(placemarks, error) -> Void in
                 
@@ -83,7 +98,15 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
                     print("Problem with the data received from geocoder")
                 }
             })
+        }
+    }
+    
+    func locationAuthStatus() -> Bool {
+        let status = CLLocationManager.authorizationStatus()
+        if status == .authorizedWhenInUse {
             
+            IJProgressView.shared.showProgressView()
+            setLocation()
             self.downloadImageData {
                 
             }
@@ -176,7 +199,6 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         gallery.present(lightbox, animated: true, completion: nil)
     }
     
-    // TODO: make this a static func in LocImage or a static class
     func imageUpload(imageName: String, image: UIImage, requestObj: RequestProtocol) {
         IJProgressView.shared.showProgressView()
 
@@ -222,10 +244,9 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         }
     }
     
-    // TODO: make this a static func in LocImage or a static class
     func downloadImageData(completed: @escaping DownloadComplete) {
         IJProgressView.shared.showProgressView()
-
+        
         let url = Constants.url + Constants.closeImages + "?lat=" + String(Location.sharedInstance.latitude) + "&lon=" + String(Location.sharedInstance.longitude)
         Alamofire.request(url).responseJSON { response in
             

@@ -14,4 +14,5 @@ public struct Constants {
     static let newImage = "src/public/image/new"
     static let closeImages = "src/public/images/"
     static let defaultRequestImp = RequestImplementation.alamofire
+    static let useAddress = false
 }
