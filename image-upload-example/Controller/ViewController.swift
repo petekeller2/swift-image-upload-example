@@ -27,6 +27,8 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var fabButton: FABButton!
     
+    var refreshControl   = UIRefreshControl()
+    
     var gallery: GalleryController!
     let editor: VideoEditing = VideoEditor() // Not used
     
@@ -52,6 +54,12 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         tableView.dataSource = self
 //        tableView.separatorInset = .zero
 //        tableView.contentInset = UIEdgeInsets(top: 0, left: -15, bottom: 0, right: 0)
+        
+        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        tableView.addSubview(refreshControl)
+
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
 
     }
     
@@ -59,6 +67,13 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         super.viewDidAppear(animated)
         if locationAuthStatus() {
 //            print("Location auth on load")
+        }
+    }
+    
+    @objc func refresh(_ sender: Any) {
+        
+        if (locationAuthStatus()) {
+            refreshControl.endRefreshing()
         }
     }
     
