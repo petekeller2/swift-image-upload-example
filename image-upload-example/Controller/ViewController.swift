@@ -239,7 +239,7 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
                     print("Upload Progress: \(Progress.fractionCompleted)")
                 })
                 
-                upload.responseData { response in
+                upload.responseData { [weak self] response in
 //                        print(response.request)  // original URL request
 //                        print(response.response) // URL response
 //                        print(response.data)     // server data
@@ -263,7 +263,7 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
         IJProgressView.shared.showProgressView()
         
         let url = Constants.url + Constants.closeImages + "?lat=" + String(Location.sharedInstance.latitude) + "&lon=" + String(Location.sharedInstance.longitude)
-        Alamofire.request(url).responseJSON { response in
+        Alamofire.request(url).responseJSON { [weak self] response in
             
             // check for errors
             guard response.result.error == nil else {
