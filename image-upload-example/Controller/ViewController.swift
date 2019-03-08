@@ -32,7 +32,6 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
     var gallery: GalleryController!
     let editor: VideoEditing = VideoEditor() // Not used
     
-    var locImage: LocImage!
     var locImages = [LocImage]()
     
     open override func viewDidLoad() {
