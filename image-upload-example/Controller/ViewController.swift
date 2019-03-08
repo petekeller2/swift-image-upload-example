@@ -244,7 +244,7 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
 //                        print(response.response) // URL response
 //                        print(response.data)     // server data
 //                        print(response.result)   // result of response serialization
-                        self.downloadImageData {
+                    self?.downloadImageData {
                             IJProgressView.shared.hideProgressView()
                         }
                     
@@ -284,12 +284,12 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
                 return
             }
 
-            self.locImages = [LocImage]()
+            self?.locImages = [LocImage]()
             for obj in json {
                 let locImage = LocImage(imageDict: obj)
-                self.locImages.append(locImage)
+                self?.locImages.append(locImage)
             }
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
             IJProgressView.shared.hideProgressView()
 
             completed()
