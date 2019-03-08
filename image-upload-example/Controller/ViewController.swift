@@ -182,7 +182,7 @@ class ViewController: UIViewController, LightboxControllerDismissalDelegate, Gal
     func galleryController(_ controller: GalleryController, didSelectImages images: [Image]) {
         controller.dismiss(animated: true, completion: nil)
         gallery = nil
-        // Save images to server and update table view @@@
+        // Save images to server and update table view
         Image.resolve(images: images, completion: { [weak self] resolvedImages in
             for image in resolvedImages {
                 let requestObj = RequestFactory().create(type: Constants.defaultRequestImp, url: Constants.url + Constants.newImage, requestData: ["location_desc": Location.sharedInstance.address, "image_desc": Location.sharedInstance.address, "lat": String(Location.sharedInstance.latitude), "lon": String(Location.sharedInstance.longitude)])
